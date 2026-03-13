@@ -37,7 +37,7 @@ $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
                 <span>Animals Adoption</span>
             </div>
             <ul class="nav-links">
-            <li><a href="http://localhost:8080/miniprojer1/dashboard.php">Dashboard</a></li>
+            <li><a href="http://localhost:8080/miniprojer1/dashboard/dashboard.php">Dashboard</a></li>
                 <li><a href="#">Missing pet</a></li>
                 <li><a href="#">Profile</a></li>
                 <li><a href="loginpage.html">Logout</a></li>
@@ -59,7 +59,7 @@ $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
 </div>
     </header>
     <main class="mani">
-    <a href="http://localhost:8080/miniprojer1/dashboard.php" title="dashboard">
+    <a href="http://localhost:8080/miniprojer1/dashboard/dashboard.php" title="dashboard">
             <div class="paw-graphic">
              <img src="fluent_animal-paw-print-20-filled.png" alt="f" width="450">
              <h1 class="main-title" width="800" justify-content="center">Animal Adoption Management</h1>

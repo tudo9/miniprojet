@@ -29,4 +29,23 @@ CREATE TABLE IF NOT EXISTS `animals` (
   `image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+)
+
+-- Table structure for table `adoptions`
+CREATE TABLE IF NOT EXISTS `adoptions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `animal_name` varchar(255) NOT NULL,
+  `species` varchar(50) NOT NULL,
+  `color` varchar(100) NOT NULL,
+  `age` int(11) NOT NULL,
+  `gender` enum('Male','Female') NOT NULL,
+  `health_status` enum('Healthy','Under Treatment') NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `adopter_fname` varchar(100) NOT NULL,
+  `adopter_lname` varchar(100) NOT NULL,
+  `adopter_phone` varchar(20) NOT NULL,
+  `adopter_address` text,
+  `adopted_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+)
+

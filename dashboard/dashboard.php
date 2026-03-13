@@ -83,7 +83,41 @@ exit;
             exit;
 
         }
+        //edit animal===============================================
+ //edit animal===============================================
+if (($_POST['action'] ?? '') === 'edit_confirm') {
+    $animal_id = (int)$_POST['animal_id'];
+    $name = mysqli_real_escape_string($conn, $_POST['new_name'] ?? '');
+    $species = mysqli_real_escape_string($conn, $_POST['new_species'] ?? '');
+    $color = mysqli_real_escape_string($conn, $_POST['new_color'] ?? '');
+    $age = (int)($_POST['new_age'] ?? 0);
+    $gender = mysqli_real_escape_string($conn, $_POST['new_gender'] ?? '');
+    $health_status = mysqli_real_escape_string($conn, $_POST['new_health_status'] ?? '');
+    // جلب الصورة القديمة في حال لم يقم المستخدم برفع صورة جديدة
+    $currentRes = mysqli_query($conn, "SELECT image FROM animals WHERE id = $animal_id");
+    $currentRow = mysqli_fetch_assoc($currentRes);
+    $image = $currentRow['image'] ?? '';
+    // معالجة رفع الصورة الجديدة إذا وُجدت
+    if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] == 0) {
+        $targetDir = __DIR__ . "/uploads/";
+        $fileName = time() . "_" . basename($_FILES["new_image"]["name"]);
+        $targetFile = $targetDir . $fileName;
+        $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+        if ($_FILES["new_image"]["size"] <= 10*1024*1024 && in_array($fileType, ["jpg","jpeg","png"])) {
+            if (move_uploaded_file($_FILES["new_image"]["tmp_name"], $targetFile)) {
+                $image = $fileName; // تحديث اسم الصورة إذا تم الرفع بنجاح
+            }
+        }
+    }
+    // تحديث البيانات في قاعدة البيانات
+    $editsql = "UPDATE animals SET name = '$name', species = '$species', color = '$color', age = $age, gender = '$gender', health_status = '$health_status', image = '$image' WHERE id = $animal_id";
+    mysqli_query($conn, $editsql);
+    header("Location: dashboard.php");
+    exit;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -93,60 +127,16 @@ exit;
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="dashboard.css">
+    <script src="script.js"></script>
 </head>
 <body>
-<!-- delete confirmation modal -->
-<div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <h3> Are you sure?</h3>
-        <p> Are you sure you want to remove this animal?</p>
-        <div class="confirmation">
-            <button id="confirmDeleteBtn" class="confirm">remove</button>
-            <button type="button" class="cancel-remove" id="cancelDeleteBtn">cancel</button>
-        </div>
-    </div>
-</div>
-
-<script>
-// Delete modal handling
-(function(){
-    var formToDelete = null;
-    function openDeleteModal(form){
-        formToDelete = form;
-        document.getElementById('deleteModal').style.display = 'flex';
-    }
-    function closeDeleteModal(){
-        formToDelete = null;
-        document.getElementById('deleteModal').style.display = 'none';
-    }
-    document.addEventListener('DOMContentLoaded', function(){
-        document.querySelectorAll('.remove-btn').forEach(function(btn){
-            btn.addEventListener('click', function(e){
-                var form = btn.closest('form');
-                if(form) openDeleteModal(form);
-            });
-        });
-        var cancel = document.getElementById('cancelDeleteBtn');
-        if(cancel) cancel.addEventListener('click', closeDeleteModal);
-        var confirm = document.getElementById('confirmDeleteBtn');
-        if(confirm) confirm.addEventListener('click', function(){
-            if(formToDelete) formToDelete.submit();
-        });
-        var modal = document.getElementById('deleteModal');
-        if(modal) modal.addEventListener('click', function(e){ if(e.target === modal) closeDeleteModal(); });
-    });
-})();
-</script>
-
-
-
 <header>
     <nav class="navbar">
         <div class="logo"> 
              <img src="fluent_animal-cat-28-regular.png" class="photo"> <span>Animals Adoption</span></div>
         <div>
             <ul class="nav-links">
-                <li><a href="home.php">Home</a></li>
+                <li><a href="http://localhost:8080/miniprojer1/home/home.php">Home</a></li>
                 <li><a href="#">Add new admin</a></li>            
                 <li><a href="loginpage.html">Logout</a></li>
             </ul>
@@ -272,8 +262,8 @@ if ($result && mysqli_num_rows($result) > 0) {
                                 <input type="hidden" name="action" value="remove">
                                 <button type="button" class="delete remove-btn">Remove</button>
                             </form>
-                    <a href="edit.php?id=<?php echo $id; ?>" ><button class="edit">Edit</button></a>
-                </span>
+                            <button type="button" class="edit" onclick="openEditModal(<?php echo $id; ?>, '<?php echo addslashes($name); ?>', '<?php echo addslashes($species); ?>', '<?php echo addslashes($color); ?>', <?php echo $age; ?>, '<?php echo addslashes($gender); ?>', '<?php echo addslashes($health_status); ?>')">Edit</button>                
+                        </span>
             </td>
             </tr>
             <?php } ?>
@@ -281,30 +271,14 @@ if ($result && mysqli_num_rows($result) > 0) {
     </table>
 <?php } ?>
 </div>
-
-</div>
-
-
-<!--adoptions Modal -->
-<script>
-function openAdoptModal(id,name){
-document.getElementById("adoptModal").style.display="flex";
-document.getElementById("animal_id").value=id;
-document.getElementById("animal_name").value=name;
-}
-function closeModal(){
-document.getElementById("adoptModal").style.display="none";
-}
-    </script>
-
+<!-- Adopt Modal -->
 
 <div id="adoptModal" class="modal">
     <div class="modal-content">
         <h2>Adoption Form</h2>
         <form method="POST" action="dashboard.php">
-            <input type="hidden" name="action" value="removecon">
+            <input type="hidden" name="action" value="adopt_confirm">
             <input type="hidden" id="animal_id" name="animal_id">
-            <input type="hidden" id="animal_name" name="animal_name">
             <label>Adopter First Name</label>
             <input type="text" name="adopter_fname" class="adopter_name" required>
             <label>Adopter Last Name</label>
@@ -319,11 +293,63 @@ document.getElementById("adoptModal").style.display="none";
     </div>
 </div>
 
-<!-- confirm remove-->
+<!-- delete confirmation modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <h3> Are you sure?</h3>
+        <p> Are you sure you want to remove this animal?</p>
+        <div class="confirmation">
+            <button id="confirmDeleteBtn" class="confirm">remove</button>
+            <button type="button" class="cancel-remove" id="cancelDeleteBtn">cancel</button>
+        </div>
+    </div>
+</div>
+<!-- edit animal modal-->
 
-
-
-
-
+<div id="editmodal" class="modal">
+    <div class="modal-content">
+        <h2>Edit Animal</h2>
+        <form action="dashboard.php" method="POST" enctype="multipart/form-data" >
+            <input type="hidden" name="action" value="edit_confirm">
+            <input type="hidden" id="edit_animal_id" name="animal_id">
+            
+            <label>Animal Name</label>
+            <input type="text" name="new_name" id="edit_name" required placeholder="e.g. Buddy">
+            
+            <label>Species</label>
+            <select name="new_species" id="edit_species" required>
+                <option value="Dog">Dog</option>
+                <option value="Cat">Cat</option>
+                <option value="Bird">Bird</option>
+                <option value="Other">Other</option>
+            </select>
+            
+            <label>Color</label>
+            <input type="text" name="new_color" id="edit_color" placeholder="e.g. Golden">
+            
+            <label>Age (Years)</label> 
+            <input type="number" name="new_age" id="edit_age" min="0" required placeholder="e.g. 3">
+            
+            <label>Gender</label>
+            <select name="new_gender" id="edit_gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            
+            <label>Health Status</label>
+            <select name="new_health_status" id="edit_health_status" required>
+                <option value="Healthy">Healthy</option>
+                <option value="Under Treatment">Under Treatment</option>
+            </select>
+            
+            <label>Animal Photo (Leave empty to keep current photo)</label>
+            <input type="file" name="new_image" id="edit_image" accept="image/*" class="file-input">
+            <small class="text-muted">Max 10MB. JPG or PNG only.</small>
+            
+            <button type="submit" class="submit">Update</button>
+            <button type="button" class="cancel" onclick="document.getElementById('editmodal').style.display='none'">Cancel</button>
+        </form>
+    </div>
+</div>
 </body>
 </html>
