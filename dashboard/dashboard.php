@@ -151,13 +151,13 @@ if (($_POST['action'] ?? '') === 'edit_confirm') {
         <form action="dashboard.php" method="POST" enctype="multipart/form-data" id="addAnimalForm">
             <input type="hidden" name="action" value="add">
             <div class="form-group">
-                <label>Animal Name</label>
-                <input type="text" name="namee" required placeholder="e.g. Buddy">
+                <label for="namee">Animal Name</label>
+                <input type="text" name="namee" id="namee"required placeholder="e.g. Buddy">
             </div>
             <div class="form-row">
                 <div class="form-group col">
-                    <label>Species</label>
-                    <select name="species" required>
+                    <label for="species">Species</label>
+                    <select name="species" id="species" required>
                         <option value="Dog">Dog</option>
                         <option value="Cat">Cat</option>
                         <option value="Bird">Bird</option>
@@ -165,33 +165,32 @@ if (($_POST['action'] ?? '') === 'edit_confirm') {
                     </select>
                 </div>
                 <div class="form-group col">
-                    <label>Color</label>
-                    <input type="text" name="color" placeholder="e.g. Golden">
+                    <label for="color">Color</label>
+                    <input type="text" name="color" placeholder="e.g. Golden" id="color">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col">
-                    <label>Age (Years)</label> 
-                    <input type="number" name="age" min="0" required placeholder="e.g. 3">
+                    <label for="age">Age (Years)</label> 
+                    <input type="number" id="age" name="age" min="0" required placeholder="e.g. 3">
                 </div>
-                <div class="form-group col">
-                    <label>Gender</label>
-                    <select name="gender" required>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                    </select>
+                <div class="form-group col" style=" display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; ">                   
+                    <input type="radio" name="gender" id="Male" value="Male" class="input-gender" required>
+                    <label for="Male" class="gender">Male</label>
+                    <input type="radio" name="gender" id="Female" value="Female"  class="input-gender" required>
+                    <label for="Female" class="gender">Female</label>
                 </div>
             </div>
             <div class="form-group">
-                <label>Health Status</label>
-                <select name="health_status" required>
+                <label for="status">Health Status</label>
+                <select name="health_status" id="status" required>
                     <option value="Healthy">Healthy</option>
                     <option value="Under Treatment">Under Treatment</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Animal Photo</label>
-                <input type="file" name="image" accept="image/*" class="file-input">
+                <label for="photo">Animal Photo</label>
+                <input type="file" name="image" id="photo" accept="image/*" class="file-input">
                 <small class="text-muted">Max 10MB. JPG or PNG only.</small>
             </div>
             <button type="submit" class="submit">Add to Center</button>
@@ -271,6 +270,7 @@ if ($result && mysqli_num_rows($result) > 0) {
     </table>
 <?php } ?>
 </div>
+</div>
 <!-- Adopt Modal -->
 
 <div id="adoptModal" class="modal">
@@ -313,10 +313,10 @@ if ($result && mysqli_num_rows($result) > 0) {
             <input type="hidden" name="action" value="edit_confirm">
             <input type="hidden" id="edit_animal_id" name="animal_id">
             
-            <label>Animal Name</label>
+            <label for="edit_name">Animal Name</label>
             <input type="text" name="new_name" id="edit_name" required placeholder="e.g. Buddy">
             
-            <label>Species</label>
+            <label for="edit_species">Species</label>
             <select name="new_species" id="edit_species" required>
                 <option value="Dog">Dog</option>
                 <option value="Cat">Cat</option>
@@ -324,25 +324,25 @@ if ($result && mysqli_num_rows($result) > 0) {
                 <option value="Other">Other</option>
             </select>
             
-            <label>Color</label>
+            <label for="edit_color">Color</label>
             <input type="text" name="new_color" id="edit_color" placeholder="e.g. Golden">
             
-            <label>Age (Years)</label> 
+            <label for="edit_age">Age (Years)</label> 
             <input type="number" name="new_age" id="edit_age" min="0" required placeholder="e.g. 3">
             
-            <label>Gender</label>
+            <label for="edit_gender">Gender</label>
             <select name="new_gender" id="edit_gender" required>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
             </select>
             
-            <label>Health Status</label>
+            <label for="edit_health_status">Health Status</label>
             <select name="new_health_status" id="edit_health_status" required>
                 <option value="Healthy">Healthy</option>
                 <option value="Under Treatment">Under Treatment</option>
             </select>
             
-            <label>Animal Photo (Leave empty to keep current photo)</label>
+            <label for="edit_image">Animal Photo (Leave empty to keep current photo)</label>
             <input type="file" name="new_image" id="edit_image" accept="image/*" class="file-input">
             <small class="text-muted">Max 10MB. JPG or PNG only.</small>
             
