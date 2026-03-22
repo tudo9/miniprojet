@@ -2,7 +2,7 @@ body{
             font-family:'Outfit',sans-serif;
             margin:0;
             padding:0;
-            background-color:#f8fafc;
+            background-color:#ffffff;
         }
         /* header */
         header{
@@ -162,6 +162,7 @@ body{
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
         .gender:hover{
             background-color: #8c8892;
@@ -175,7 +176,7 @@ body{
         }
         .input-gender:checked + .gender{
             background-color: #137657;
-            transform: scale(1.17);
+            transform: scale(1.1);
         }
         /* dashboard-full */
         .dashboard-full{

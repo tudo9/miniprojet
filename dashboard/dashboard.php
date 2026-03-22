@@ -137,8 +137,8 @@ if (($_POST['action'] ?? '') === 'edit_confirm') {
         <div>
             <ul class="nav-links">
                 <li><a href="http://localhost:8080/miniprojer1/home/home.php">Home</a></li>
-                <li><a href="#">Add new admin</a></li>            
-                <li><a href="loginpage.html">Logout</a></li>
+                <li><a href="#">Profiles</a></li>            
+                <li><a href="#">Logout</a></li>
             </ul>
         </div>
     </nav>

@@ -37,10 +37,9 @@ document.getElementById("adoptModal").style.display="none";
 }
 // edit Modal
 function openEditModal(id, name, species, color, age, gender, health_status) {
-    // فتح النافذة المنبثقة
+    // open modal  
     document.getElementById('editmodal').style.display = 'block';
-    
-    // تعبئة الحقول بالبيانات الحالية
+    // old values    
     document.getElementById('edit_animal_id').value = id;
     document.getElementById('edit_name').value = name;
     document.getElementById('edit_species').value = species;

@@ -38,8 +38,8 @@ $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
             </div>
             <ul class="nav-links">
             <li><a href="http://localhost:8080/miniprojer1/dashboard/dashboard.php">Dashboard</a></li>
-                <li><a href="#">Profile</a></li>
-                <li><a href="loginpage.html">Logout</a></li>
+                <li><a href="#">Logout</a></li>
+                <li><a href="#">Login</a></li>
             </ul>
 </nav>
 <div class="stats-bar">
