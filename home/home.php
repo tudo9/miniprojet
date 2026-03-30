@@ -1,4 +1,13 @@
 <?php
+session_start();
+// if user is logged in, make login button disappear and show dashboard
+if(isset($_SESSION["username"])) {
+ $logedin = 1;    
+}
+else {
+    $logedin = 0;
+}
+
 $server="localhost";
 $user="root";
 $pass="";
@@ -36,11 +45,14 @@ $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
                 <img src="fluent_animal-cat-28-regular.png" title="logo" class="photo">
                 <span>Animals Adoption</span>
             </div>
-            <ul class="nav-links">
+    <ul class="nav-links">
+        <?php if ( $logedin === 1 ): ?>
             <li><a href="http://localhost:8080/miniprojer1/dashboard/dashboard.php">Dashboard</a></li>
-                <li><a href="#">Logout</a></li>
-                <li><a href="#">Login</a></li>
-            </ul>
+            <li><a href="http://localhost:8080/miniprojer1/auth/logout.php">Logout</a></li>
+        <?php else: ?>
+            <li><a href="http://localhost:8080/miniprojer1/auth/login.php">Login</a></li>
+        <?php endif; ?>
+    </ul>
 </nav>
 <div class="stats-bar">
     <div>

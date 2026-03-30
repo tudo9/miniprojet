@@ -1,13 +1,27 @@
+    @import url(https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400&display=swap);
+    @import url(https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap);
 body{
             font-family:'Outfit',sans-serif;
             margin:0;
             padding:0;
             background-color:#ffffff;
+            display: flex;
+
+        }
+        .without-sidebar{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 60px; /* يترك مساحة للسايد بار المجمع */
+            transition: filter 0.4s ease, margin-left 0.4s ease;
+            width: calc(100% - 110px);
+
         }
         /* header */
         header{
             background-color: #137657;
             padding:25px 50px 10px 50px;
+            width: 100%;
         }
         .navbar{
             display:flex;
@@ -54,12 +68,14 @@ body{
         /* add animal area */
         .add-animal{
             border-radius:15px;
-            width:340px;
+            width: 50vh;
             background:#ffffff;
             display:grid;
             grid-template-columns:repeat(1,1fr);
             padding:20px;
             box-shadow:0px 0px 50px rgba(0,0,0,0.1);
+            margin-left: 60px;
+            height: fit-content;
         }
             /* label in add animal area */
 
@@ -176,21 +192,19 @@ body{
         }
         .input-gender:checked + .gender{
             background-color: #137657;
-            transform: scale(1.1);
+            transform: scale(0.95);
         }
         /* dashboard-full */
         .dashboard-full{
-            margin-top: 50px;
+            margin-top: 40px;
             display: flex;
-            flex-direction: row;
-            align-items: flex-start;
+            gap: 40px;
             justify-content: center;
-            gap: 150px;
         }
         /* animal list (array of animals)*/
         .list-animal{
             border-radius:15px;
-            width: 50%;
+            width: 95vh;
             background: #ffffff;
             display:grid;
             grid-template-columns:repeat(1,1fr);
@@ -218,7 +232,7 @@ body{
             transition: transform 0.5s ease;
         }
         /* edit and delete and adopt*/
-            /* confirmation modal */
+            /* confirmation delete modal */
         .confirmation{
             background-color: #ffffff;
             width: auto;
@@ -226,14 +240,14 @@ body{
             margin-top: 30px;
             display: flex;
             justify-content: center;
-            gap: 50%;
+            gap: 25%;
         } 
         .confirm{
             background-color: #666;
             border: none;
+            width: 80rem;
             color: #ffffff;
-            width: 25%;
-            height: 30px;
+            height: 35px;
             text-decoration:none;
             border-radius: 8px;
         }
@@ -248,11 +262,11 @@ body{
             transition: transform 0.5s ease;
         }       
         .cancel-remove{
+            width: 80rem;
             background-color: #666;
-            width: 25%;
             border: none;
             color: #ffffff;
-            height: 30px;
+            height: 35px;
             text-decoration:none;
             border-radius: 8px;
         }
@@ -319,12 +333,12 @@ body{
         }
         /*for adoption and edit form*/
         .modal{
-            display:none;
+            
+            display: none;
             position:fixed;
             align-items: center;
             justify-content: center;
             top:0;
-            left:0;
             width:100%;
             height:100%;
             background:rgba(0,0,0,0.5);
@@ -357,6 +371,13 @@ body{
             border-radius:10px;
             width:350px;
         }
+        .edit-modal-content{
+            background:white;
+            padding:20px 40px 20px 40px;
+            border-radius:10px;
+            width:350px;
+        margin-left: calc((100% - 350px)/2);
+            }
         .modal .cancel{
             margin-top: 20px;
         }
@@ -374,3 +395,92 @@ body{
             transform: scale(1.05);
             transition: transform 0.3s ease;
         }
+        /* sidebar */
+/* --- تعديلات الـ Sidebar --- */
+.sidebar {
+    width: 60px; /* العرض عند الإغلاق (مجمع) */
+    background-color: #093527;
+    padding: 20px 10px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    transition: width 0.4s ease; /* حركة انسيابية */
+    overflow: hidden;
+    white-space: nowrap;
+    color: white;
+}
+
+
+/* عندما ينفتح السايد بار */
+.sidebar.expanded {
+    width: 250px; /* العرض عند الفتح */
+}
+.sidebar li {
+ margin-left: -8px;
+ color: white;
+}
+.sidebar ul li:hover {
+            color:#ffffff;
+            background-color: #ffffff4f; 
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+.logout{
+    position: absolute;
+    top: 85%;
+}
+/* إخفاء النصوص والعناوين عند الانغلاق */
+.sidebar ul li span, .sidebar h2, .sidebar h4 {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.sidebar.expanded ul li span, .sidebar.expanded h2, .sidebar.expanded h4 {
+    opacity: 1;
+}
+/* الضبابية عندما يكون السايد بار مفتوحاً */
+body.sidebar-open .without-sidebar {
+    filter: blur(5px);
+    pointer-events: none; /* يمنع التفاعل مع العناصر الخلفية */
+}
+
+/* --- الطبقة الشفافة (Overlay) --- */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+}
+
+body.sidebar-open .sidebar-overlay {
+    display: block;
+}
+
+/* زر التبديل (Hamburger Menu) داخل السايد بار */
+.toggle-btn {
+    color: white;
+    cursor: pointer;
+    font-size: 24px;
+    margin-bottom: 30px;
+    display: block;
+    text-align: center;
+}
+li{
+    list-style: none;
+}
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}

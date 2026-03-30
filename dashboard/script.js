@@ -27,14 +27,19 @@
     });
 })();
 // Adopt Modal
-function openAdoptModal(id,name){
-document.getElementById("adoptModal").style.display="flex";
-document.getElementById("animal_id").value=id;
-document.getElementById("animal_name").value=name;
+function openAdoptModal(id, name) {
+    document.getElementById("adoptModal").style.display = "flex";
+    document.getElementById("animal_id").value = id;
+    if(document.getElementById("animal_name")) {
+        document.getElementById("animal_name").value = name;
+    }
 }
-function closeModal(){
-document.getElementById("adoptModal").style.display="none";
+function closeModal() {
+    document.getElementById("adoptModal").style.display = "none";
 }
+
+
+
 // edit Modal
 function openEditModal(id, name, species, color, age, gender, health_status) {
     // open modal  

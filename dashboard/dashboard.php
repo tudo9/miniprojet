@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION["username"])) {
+    // إذا لم يكن مسجلاً، وجهه لصفحة تسجيل الدخول
+    header("Location: http://localhost:8080/miniprojer1/auth/login.php");
+    exit();
+}
 $server="localhost";
 $user="root";
 $pass="";
@@ -116,6 +122,15 @@ if (($_POST['action'] ?? '') === 'edit_confirm') {
     header("Location: dashboard.php");
     exit;
 }
+// total animals
+$totalAnimalsQuery = mysqli_query($conn,"SELECT COUNT(*) as total FROM animals");
+$totalAnimals = mysqli_fetch_assoc($totalAnimalsQuery)['total'];
+// total adopted
+$total_adoptedquery = mysqli_query($conn,"SELECT COUNT(*) as total FROM adoptions");
+$total_adopted = mysqli_fetch_assoc($total_adoptedquery)["total"];
+// total available
+$availableAnimalsQuery = mysqli_query($conn,"SELECT COUNT(*) as total FROM animals WHERE health_status = 'healthy'");
+$available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
 ?>
 
 <!DOCTYPE html>
@@ -124,12 +139,70 @@ if (($_POST['action'] ?? '') === 'edit_confirm') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Animal Adoption Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script src="script.js"></script>
 </head>
 <body>
+    <!-- Sidebar -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="sidebar" id="mySidebar" onmouseenter="expandSidebar()" onmouseleave="collapseSidebar()">
+    <div class="toggle-btn">☰</div>
+    <h2 style="margin-left: 5px;">hello Admin!</h2>
+    <ul>
+        <li style="margin-left: -32px; display: flex;align-items: center; ">
+            <a href="http://localhost:8080/miniprojer1/home/home.php">
+                <i class="fa-solid fa-house" style="margin-right: 5px;"></i> <span>Home</span> </a>
+        </li>
+        <br>
+        <li style="margin-left: -20px ; display: flex;align-items: center; ">
+            <i class="fa-solid fa-user" style="margin-right: 5px;"></i> <span>Profiles</span>
+        </li>
+        <br>
+        <li><span><hr style="position: absolute; left: 2px; width: 100vh; border: none;height: 1px; background-color: #ccc;"></span></li>
+        <br>
+            <div class="stats-bar" style="margin-left: -28px; padding-left: 15px;">
+                <li><i class="fa-solid fa-paw" style="margin-right: 5px;"></i>
+                <span style=""><?php echo $totalAnimals; ?> animals</span></li>
+                <br>
+                <li>    <span style=""><i class="fa-solid fa-house" style="margin-right: 5px;"></i><?php echo $total_adopted; ?> adopted</span></li>
+                <br>
+                <li>    <span style=""><i class="fa-solid fa-heart" style="margin-right: 5px;"></i><?php echo $available; ?> available </span></li> 
+            </div>
+        <li class="logoutbt" style="margin-left: -32px;">
+            <a class="logout" href="http://localhost:8080/miniprojer1/auth/logout.php">
+                <i class="fa-solid fa-sign-out-alt" style="margin-right: 5px;"></i> <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+</div>
+ <script>
+function expandSidebar() {
+    const sidebar = document.getElementById("mySidebar");
+    const body = document.body;
+    
+    sidebar.classList.add("expanded");
+    body.classList.add("sidebar-open");
+}
+
+function collapseSidebar() {
+    const sidebar = document.getElementById("mySidebar");
+    const body = document.body;
+    
+    sidebar.classList.remove("expanded");
+    body.classList.remove("sidebar-open");
+}
+
+// Toggle sidebar when clicking the toggle button or overlay
+
+function toggleSidebar() {
+    collapseSidebar();
+} </script>
+
+
+<div class="without-sidebar">
 <header>
     <nav class="navbar">
         <div class="logo"> 
@@ -137,8 +210,7 @@ if (($_POST['action'] ?? '') === 'edit_confirm') {
         <div>
             <ul class="nav-links">
                 <li><a href="http://localhost:8080/miniprojer1/home/home.php">Home</a></li>
-                <li><a href="#">Profiles</a></li>            
-                <li><a href="#">Logout</a></li>
+                <li><a href="http://localhost:8080/miniprojer1/auth/logout.php">Logout</a></li>
             </ul>
         </div>
     </nav>
@@ -276,26 +348,53 @@ if ($result && mysqli_num_rows($result) > 0) {
 <div id="adoptModal" class="modal">
     <div class="modal-content">
         <h2>Adoption Form</h2>
-        <form method="POST" action="dashboard.php">
+        <form id="adoptform" method="POST" action="dashboard.php" >
             <input type="hidden" name="action" value="adopt_confirm">
             <input type="hidden" id="animal_id" name="animal_id">
             <label>Adopter First Name</label>
             <input type="text" name="adopter_fname" class="adopter_name" required>
             <label>Adopter Last Name</label>
             <input type="text" name="adopter_lname" class="adopter_name" required>
-            <label>Phone</label>
-            <input type="text" name="adopter_phone" class="adopter_phone" required>
+            <label for="adopter_phone">Phone</label>
+            <input type="text"  name="adopter_phone" id="adopter_phone" class="adopter_phone" required>
+            <small id="error" style="display: none ;color: red; ">Enter a valid phone number (0XX XXX XX XX or +213XX XXX XX XX)</small>
+            <br>
             <label>Address</label>
             <input type="text" name="adopter_address" class="adopter_address">
-            <button type="submit" class="submit">Confirm Adoption</button>
+            <button type="submit" class="submit" id="submit">Confirm Adoption</button>
             <button type="button" class="cancel" onclick="closeModal()">Cancel</button>
         </form>
     </div>
 </div>
+    <!-- validate phone number-->
+<script>
+        const phone = document.getElementById('adopter_phone');
+    const error = document.getElementById('error');
+    phone.addEventListener('input', () => {
+        const value = phone.value;
+        const onlyNumbersRegex = /^(0|\+213)[567]\d{8}$/;
+        const submit = document.getElementById("submit");
+        if (value === ""){
+            error.style.display = "none";
+            adopter_phone.style.border = "1px solid #ccc";
+            submit.disabled = true;
+        }
+        else if (!onlyNumbersRegex.test(value)) {
+            error.style.display = "block";
+            adopter_phone.style.border = "1px solid red";
+            submit.disabled = true;
+        }
+        else {
+            error.style.display = "none";
+            adopter_phone.style.border = "1px solid #ccc";
+            submit.disabled = false;
+        }   
+    });
+</script>
 
 <!-- delete confirmation modal -->
 <div id="deleteModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="width: 15rem">
         <h3> Are you sure?</h3>
         <p> Are you sure you want to remove this animal?</p>
         <div class="confirmation">
@@ -307,7 +406,7 @@ if ($result && mysqli_num_rows($result) > 0) {
 <!-- edit animal modal-->
 
 <div id="editmodal" class="modal">
-    <div class="modal-content">
+    <div class="edit-modal-content">
         <h2>Edit Animal</h2>
         <form action="dashboard.php" method="POST" enctype="multipart/form-data" >
             <input type="hidden" name="action" value="edit_confirm">
@@ -350,6 +449,7 @@ if ($result && mysqli_num_rows($result) > 0) {
             <button type="button" class="cancel" onclick="document.getElementById('editmodal').style.display='none'">Cancel</button>
         </form>
     </div>
+</div>
 </div>
 </body>
 </html>

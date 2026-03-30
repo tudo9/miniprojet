@@ -1,0 +1,91 @@
+    @import url(https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400&display=swap);
+    @import url(https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap);
+        body{
+            margin: 0;
+            background: linear-gradient(90deg, #ffffffff 45%, #137657 45%);
+            height: fit-content;
+            font-family:'Outfit',sans-serif;
+            font-weight: 600;
+        }
+        .form-login{
+            margin: 10vh auto 10vh 15vh;
+            display:grid;
+            grid-template-columns:repeat(1,1fr);
+            padding:35px;
+            box-shadow:0px 0px 100px rgba(0,0,0,0.2);
+            width: 27%;
+            height: 70vh;
+            background-color: rgb(255, 255, 255); 
+            border-radius: 15px;
+        }
+        input[type="text"], input[type="password"]{
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            height: 1rem;
+        }
+        .or{
+            font-weight: bold;
+            height: fit-content;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            margin-top: 30px
+        }
+        hr{
+            width: 47%; 
+            height: 1px; 
+            background-color: black; 
+            border: none;
+        }
+        .notadmin{
+            text-align: center;
+        }
+        .paragraph{
+            position: absolute;
+            height: fit-content;
+            width: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            top: 15vh;
+            left: 102vh;
+        }
+         .paragraph h1{
+            margin: 0;
+            font-size: 4rem;
+            color: #dfdfdf;
+        }        
+            @keyframes typing {
+                from { width: 0 }
+                to { width: 100% }
+            }
+            .paragraph p{
+                white-space: nowrap;
+                margin: 0;
+                position: absolute;
+                top: 35vh;
+                left: 0px;
+                overflow: hidden;
+                animation: typing 3s steps(120) infinite ;
+            }
+         .form-login input[type="submit"]{
+             margin-top: 20px;
+             background-color: #137657;
+             border: none;
+             color: #ffffff;
+             height: 40px;
+             border-radius: 8px;
+         }
+        .error-msg {
+            color: red;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        a{
+            color: #137657;
+            text-decoration: none;
+        }
