@@ -53,3 +53,11 @@ function openEditModal(id, name, species, color, age, gender, health_status) {
     document.getElementById('edit_gender').value = gender;
     document.getElementById('edit_health_status').value = health_status;
 }
+// add new admin modal
+    function openAddAdminModal() {
+    document.getElementById('addAdminModal').style.display = 'block';
+}
+
+
+
+

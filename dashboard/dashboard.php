@@ -131,6 +131,31 @@ $total_adopted = mysqli_fetch_assoc($total_adoptedquery)["total"];
 // total available
 $availableAnimalsQuery = mysqli_query($conn,"SELECT COUNT(*) as total FROM animals WHERE health_status = 'healthy'");
 $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
+
+// add new admin
+if (($_POST["action"] ?? '') == "addadmin") {
+    $newusername = mysqli_real_escape_string($conn, $_POST["admin_username"] ?? '');
+    $newpassword = mysqli_real_escape_string($conn, $_POST["admin_password"] ?? '');
+    $hashedPassword = password_hash($newpassword, PASSWORD_DEFAULT);
+    $sql = "INSERT INTO admins (username , password)
+    VALUES ('$newusername' , '$hashedPassword')";
+    mysqli_query($conn, $sql);
+    header("Location: dashboard.php");
+    exit;
+}
+// Handle filters
+$where_clause = "WHERE 1=1";
+$params = [];
+
+if(isset($_GET['species_filter']) && !empty($_GET['species_filter'])) {
+    $where_clause .= " AND species = :species";
+    $params[':species'] = $_GET['species_filter'];
+}
+
+if(isset($_GET['health_filter']) && !empty($_GET['health_filter'])) {
+    $where_clause .= " AND health_status = :health";
+    $params[':health'] = $_GET['health_filter'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -145,39 +170,69 @@ $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
     <script src="script.js"></script>
 </head>
 <body>
+    
     <!-- Sidebar -->
 <div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
 
 <div class="sidebar" id="mySidebar" onmouseenter="expandSidebar()" onmouseleave="collapseSidebar()">
     <div class="toggle-btn">☰</div>
-    <h2 style="margin-left: 5px;">hello Admin!</h2>
+    <h2 style="margin-left: 5px;">hello <?php echo $_SESSION['username']; ?> !</h2>
     <ul>
         <li style="margin-left: -32px; display: flex;align-items: center; ">
             <a href="http://localhost:8080/miniprojer1/home/home.php">
                 <i class="fa-solid fa-house" style="margin-right: 5px;"></i> <span>Home</span> </a>
-        </li>
-        <br>
+        </li>        
+        <br><br>
+        <!-- stats -->
+        <div class="stats-bar" style="margin-left: -28px; padding-left: 15px;">
+            <li><i class="fa-solid fa-paw" style="margin-right: 5px;"></i>
+            <span style=""><?php echo $totalAnimals; ?> animals</span></li>
+            <br><br>
+            <li>    <i class="fa-solid fa-hand-holding-heart" style="margin-right: 5px;"></i><span style=""><?php echo $total_adopted; ?> adopted</span></li>
+            <br><br>
+            <li>    <i class="fa-solid fa-heart" style="margin-right: 5px;"></i><span style=""><?php echo $available; ?> available </span></li> 
+        </div>
+        <li><span><hr style="position: absolute; left: -25px; width: 100vh; border: none;height: 1px; background-color: #ccc;"></span></li>
+        <br><br>
+        <!-- profiles-->
+         
         <li style="margin-left: -20px ; display: flex;align-items: center; ">
             <i class="fa-solid fa-user" style="margin-right: 5px;"></i> <span>Profiles</span>
         </li>
+        
+        <li style="display: flex; align-items: center; justify-content: center;margin-top: 5px; margin-left: -120px;">
+            <span style="background-color: #ffffff4f; border-radius: 5px;padding: 5px;"><?php
+                echo ("User" . ": " . $_SESSION["username"]);?>
+            </span>
+            <br>
+        </li>
+        <li><span><hr style="position: absolute; left: 17%; width: 100vh; border: none;height: 1px; background-color: #ccc;"></span></li>
         <br>
-        <li><span><hr style="position: absolute; left: 2px; width: 100vh; border: none;height: 1px; background-color: #ccc;"></span></li>
+        <li>
+            <span>
+                <a onclick="openAddAdminModal()" style="background-color: none; height: 2px;"> 
+                    <i class="fa-solid fa-circle-plus" style="margin-right: 5px;"></i>Add a new Admin</a>
+            </span>
+        </li>
         <br>
-            <div class="stats-bar" style="margin-left: -28px; padding-left: 15px;">
-                <li><i class="fa-solid fa-paw" style="margin-right: 5px;"></i>
-                <span style=""><?php echo $totalAnimals; ?> animals</span></li>
-                <br>
-                <li>    <span style=""><i class="fa-solid fa-house" style="margin-right: 5px;"></i><?php echo $total_adopted; ?> adopted</span></li>
-                <br>
-                <li>    <span style=""><i class="fa-solid fa-heart" style="margin-right: 5px;"></i><?php echo $available; ?> available </span></li> 
-            </div>
-        <li class="logoutbt" style="margin-left: -32px;">
+        <li>
+            <span>
+                <a href="http://localhost:8080/miniprojer1/auth/login.php" style="background-color: none; height: 2px;">
+                    <i class="fa-solid fa-right-left" style="margin-right: 5px;"></i>Use another account
+                </a>
+            </span>
+        </li>
+
+        <!-- logout -->
+
+        <li style="margin-left: -32px; position: absolute; top: 85%; width: 85%;">
             <a class="logout" href="http://localhost:8080/miniprojer1/auth/logout.php">
                 <i class="fa-solid fa-sign-out-alt" style="margin-right: 5px;"></i> <span>Logout</span>
             </a>
         </li>
     </ul>
 </div>
+
  <script>
 function expandSidebar() {
     const sidebar = document.getElementById("mySidebar");
@@ -270,12 +325,28 @@ function toggleSidebar() {
     </div>
 </div>
 <!-- Animal List -->
+    <!-- search bar -->
 <div class="list-animal">
+    <div class="searchbar" >
+        <h1 >All animals</h1>
+        <i class="fa-solid fa-search" style="margin: 5px 0 0 31%; width: fit-content; height: 20px;"></i>
+
+        <input type="text" id="searchInput" name="search" onkeyup="instantsearch()" placeholder="Name or color..."  class="search-input">
+
+        <select name="species_filter" id="speciesfilter" onchange="filterbyspecies()" >
+            <option value="">All Species</option>
+            <option value="Dog" id="dog" <?php if(isset($_GET['species_filter']) && $_GET['species_filter'] == 'Dog') echo 'selected'; ?>>Dogs</option>
+            <option value="Cat" id="cat" <?php if(isset($_GET['species_filter']) && $_GET['species_filter'] == 'Cat') echo 'selected'; ?>>Cats</option>
+            <option value="Bird" id="bird" <?php if(isset($_GET['species_filter']) && $_GET['species_filter'] == 'Bird') echo 'selected'; ?>>Birds</option>
+        </select>
+    </div>
+    <br>                 
 <?php
-$result = mysqli_query($conn,"SELECT * FROM animals ORDER BY id DESC");
+$searchTerm = mysqli_real_escape_string($conn, $_POST['search'] ?? '');
+$result = mysqli_query($conn,"SELECT * FROM animals WHERE name LIKE '%$searchTerm%' OR color LIKE '%$searchTerm%' order by id desc");
 if ($result && mysqli_num_rows($result) > 0) {
 ?>
-    <table class="animals-table">
+    <table class="animals-table" id="animalsTable">
         <thead>
             <tr>
                 <th style="text-align: left;">Photo</th>
@@ -286,18 +357,20 @@ if ($result && mysqli_num_rows($result) > 0) {
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = mysqli_fetch_assoc($result)) {
-                $id = (int)$row["id"];
-                $name = htmlspecialchars($row["name"] ?? '');
-                $species = htmlspecialchars($row["species"] ?? '');
-                $color = htmlspecialchars($row["color"] ?? '');
-                $age = htmlspecialchars($row["age"] ?? '');
-                $gender = htmlspecialchars($row["gender"] ?? '');
-                $health_status = htmlspecialchars($row["health_status"] ?? '');
-                $image = '';
-                if (!empty($row['image'])) {
-                    $image = 'uploads/' . htmlspecialchars($row['image']);
-                }
+            <?php 
+            
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $id = (int)$row["id"];
+                    $name = htmlspecialchars($row["name"] ?? '');
+                    $species = htmlspecialchars($row["species"] ?? '');
+                    $color = htmlspecialchars($row["color"] ?? '');
+                    $age = htmlspecialchars($row["age"] ?? '');
+                    $gender = htmlspecialchars($row["gender"] ?? '');
+                    $health_status = htmlspecialchars($row["health_status"] ?? '');
+                    $image = '';
+                    if (!empty($row['image'])) {
+                        $image = 'uploads/' . htmlspecialchars($row['image']);
+                    }
             ?>
             <tr>
                 <td style="text-align:left;"><img src="<?php echo $image; ?>" alt="Animal Photo" width="100"></td>
@@ -328,13 +401,13 @@ if ($result && mysqli_num_rows($result) > 0) {
                 Adopt
                 </button>
                 <span class="edit-remove">
-                            <form action="dashboard.php" method="POST" class="remove-form">
-                                <input type="hidden" name="id" value="<?php echo $id; ?>">
-                                <input type="hidden" name="action" value="remove">
-                                <button type="button" class="delete remove-btn">Remove</button>
-                            </form>
-                            <button type="button" class="edit" onclick="openEditModal(<?php echo $id; ?>, '<?php echo addslashes($name); ?>', '<?php echo addslashes($species); ?>', '<?php echo addslashes($color); ?>', <?php echo $age; ?>, '<?php echo addslashes($gender); ?>', '<?php echo addslashes($health_status); ?>')">Edit</button>                
-                        </span>
+                    <form action="dashboard.php" method="POST" class="remove-form">
+                        <input type="hidden" name="id" value="<?php echo $id; ?>">
+                        <input type="hidden" name="action" value="remove">
+                        <button type="button" class="delete remove-btn">Remove</button>
+                    </form>
+                    <button type="button" class="edit" onclick="openEditModal(<?php echo $id; ?>, '<?php echo addslashes($name); ?>', '<?php echo addslashes($species); ?>', '<?php echo addslashes($color); ?>', <?php echo $age; ?>, '<?php echo addslashes($gender); ?>', '<?php echo addslashes($health_status); ?>')">Edit</button>                
+                </span>
             </td>
             </tr>
             <?php } ?>
@@ -343,6 +416,55 @@ if ($result && mysqli_num_rows($result) > 0) {
 <?php } ?>
 </div>
 </div>
+<script>
+    function instantsearch() {
+    // 1. الحصول على النص المكتوب وتحويله لحروف صغيرة
+    let input = document.getElementById('searchInput');
+    let filter = input.value.toLowerCase();
+    
+    // 2. الوصول إلى جدول الحيوانات وصفوفه
+    let table = document.getElementById('animalsTable');
+    let tr = table.getElementsByTagName('tr');
+
+    // 3. المرور على كل الصفوف (تجاهل رأس الجدول index 0)
+    for (let i = 1; i < tr.length; i++) {
+        // نأخذ النص الموجود في خلية الاسم وخلية المعلومات (النوع واللون)
+        let nameCell = tr[i].getElementsByTagName('td')[1]; // عمود الاسم
+        let infoCell = tr[i].getElementsByTagName('td')[2]; // عمود المعلومات
+        
+        if (nameCell || infoCell) {
+            let nameText = nameCell.textContent || nameCell.innerText;
+            let infoText = infoCell.textContent || infoCell.innerText;
+            
+            // 4. إذا كان النص المكتوب موجوداً في الاسم أو المعلومات، اظهر الصف، وإلا أخفه
+            if (nameText.toLowerCase().indexOf(filter) > -1 || 
+                infoText.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+// filter by species
+ function filterbyspecies() {
+        let species = document.getElementById('speciesfilter');
+        let selectedSpecies = species.value;
+        let table = document.getElementById('animalsTable');
+        let tr = table.getElementsByTagName('tr');
+        for (let i = 1; i < tr.length; i++) {
+            let speciesCell = tr[i].getElementsByTagName('td')[2]; // عمود المعلومات
+            if (speciesCell) {
+                let speciesText = speciesCell.textContent || speciesCell.innerText;
+                if (selectedSpecies === "" || speciesText.toLowerCase().indexOf(selectedSpecies.toLowerCase()) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+ }
+</script>
 <!-- Adopt Modal -->
 
 <div id="adoptModal" class="modal">
@@ -403,6 +525,7 @@ if ($result && mysqli_num_rows($result) > 0) {
         </div>
     </div>
 </div>
+
 <!-- edit animal modal-->
 
 <div id="editmodal" class="modal">
@@ -451,5 +574,23 @@ if ($result && mysqli_num_rows($result) > 0) {
     </div>
 </div>
 </div>
+
+<!-- add admin modal -->
+
+<div id="addAdminModal" class="modal" >
+    <div class="addadmin-content">
+        <h2>Add New Admin</h2>
+        <form id="addAdminForm" method="POST" action="dashboard.php">
+            <label for="admin_username">Username</label>
+            <input type="text" name="admin_username" id="admin_username" required>
+            <label for="admin_password">Password</label>
+            <input type="password" name="admin_password" id="admin_password" required>
+            <input type="hidden" name="action" value="addadmin">
+            <button type="submit" class="submit" >Add Admin</button>
+            <button type="button" class="cancel" onclick="document.getElementById('addAdminModal').style.display='none'">Cancel</button>
+        </form>
+    </div>    
+</div>
+
 </body>
 </html>

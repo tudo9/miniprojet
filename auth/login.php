@@ -50,7 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
     } else {
         $error_message = "Please fill in all fields.";
     }
-    exit;
 }
 ?>
 <!DOCTYPE html>

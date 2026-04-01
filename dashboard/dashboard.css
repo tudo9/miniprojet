@@ -4,24 +4,27 @@ body{
             font-family:'Outfit',sans-serif;
             margin:0;
             padding:0;
-            background-color:#ffffff;
             display: flex;
-
+            background-color:white;
         }
         .without-sidebar{
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-left: 60px; /* يترك مساحة للسايد بار المجمع */
-            transition: filter 0.4s ease, margin-left 0.4s ease;
-            width: calc(100% - 110px);
-
+            margin-left: 60px;
+            width: 100%; 
+            padding-top: 100px;       
         }
         /* header */
         header{
             background-color: #137657;
             padding:25px 50px 10px 50px;
             width: 100%;
+            position: fixed;
+            top: 0;
+            right: 0;
+            box-sizing: border-box;
+            height: 100px;
         }
         .navbar{
             display:flex;
@@ -65,6 +68,92 @@ body{
             width: 28px;
             height: 28px;
         }
+        /* sidebar */
+            /* --- تعديلات الـ Sidebar --- */
+            .sidebar {
+                width: 60px; /* العرض عند الإغلاق (مجمع) */
+                background-color: #093527;
+                padding: 20px 10px;
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: 1000;
+                transition: width 0.4s ease; /* حركة انسيابية */
+                overflow: hidden;
+                white-space: nowrap;
+                color: white;
+            }
+
+
+            /* عندما ينفتح السايد بار */
+            .sidebar.expanded {
+                width: 250px; /* العرض عند الفتح */
+            }
+            .sidebar li {
+             margin-left: -8px;
+             color: white;
+            }
+            .sidebar ul li:hover {
+                color:#ffffff;
+                background-color: #ffffff4f; 
+                padding: 5px;
+                border-radius: 5px;
+                transition: all 0.3s ease;
+            }
+            /* إخفاء النصوص والعناوين عند الانغلاق */
+            .sidebar ul li span, .sidebar h2, .sidebar h4 {
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .sidebar.expanded ul li span, .sidebar.expanded h2, .sidebar.expanded h4 {
+                opacity: 1;
+            }
+            /* الضبابية عندما يكون السايد بار مفتوحاً */
+            body.sidebar-open .without-sidebar {
+                filter: blur(5px);
+                pointer-events: none; /* يمنع التفاعل مع العناصر الخلفية */
+            }
+
+            /* --- الطبقة الشفافة (Overlay) --- */
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.3);
+                z-index: 999;
+            }
+
+            body.sidebar-open .sidebar-overlay {
+                display: block;
+            }
+
+            /* زر التبديل (Hamburger Menu) داخل السايد بار */
+            .toggle-btn {
+                color: white;
+                cursor: pointer;
+                font-size: 24px;
+                margin-bottom: 30px;
+                display: block;
+                text-align: center;
+            }
+            li{
+                list-style: none;
+            }
+            .sidebar ul li a {
+                color: white;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                padding: 10px;
+                border-radius: 8px;
+                transition: background-color 0.3s ease;
+            }
+
         /* add animal area */
         .add-animal{
             border-radius:15px;
@@ -73,8 +162,8 @@ body{
             display:grid;
             grid-template-columns:repeat(1,1fr);
             padding:20px;
-            box-shadow:0px 0px 50px rgba(0,0,0,0.1);
-            margin-left: 60px;
+            box-shadow:0px 0px 30px rgba(0,0,0,0.4);
+            margin-left: 20px;
             height: fit-content;
         }
             /* label in add animal area */
@@ -161,44 +250,17 @@ body{
             padding:12px 15px;
             text-align:center;
             border-bottom:1px solid #ddd;
-            background-color: #ffffff;
+            border-top:1px solid #ddd;
+            background-color: #f8fafc;
             color:black;
             font-family: 'Outfit', sans-serif;
             font-weight: 600;
         }
-            /*male and female radio*/
-        .gender{
-            background-color: #8c8892; 
-            color: #ffffff; 
-            border: none; 
-            border-radius: 20px; 
-            height: 40px; 
-            width: 50%; 
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .gender:hover{
-            background-color: #8c8892;
-            transform: scale(1.05);
-        }
-        .input-gender{
-            width: 0.01px;
-        }
-        #Male{
-            display: none;
-        }
-        .input-gender:checked + .gender{
-            background-color: #137657;
-            transform: scale(0.95);
-        }
-        /* dashboard-full */
+                /* dashboard-full */
         .dashboard-full{
             margin-top: 40px;
             display: flex;
-            gap: 40px;
+            gap: 60px;
             justify-content: center;
         }
         /* animal list (array of animals)*/
@@ -209,7 +271,7 @@ body{
             display:grid;
             grid-template-columns:repeat(1,1fr);
             padding:20px;
-            box-shadow:0px 0px 50px rgba(0,0,0,0.1);
+            box-shadow:0px 0px 30px rgba(0,0,0,0.4);
         }
         .species{
         display: inline-block; 
@@ -333,7 +395,6 @@ body{
         }
         /*for adoption and edit form*/
         .modal{
-            
             display: none;
             position:fixed;
             align-items: center;
@@ -394,93 +455,68 @@ body{
             background-color: red;
             transform: scale(1.05);
             transition: transform 0.3s ease;
+        } 
+            /*male and female radio*/
+        .gender{
+            background-color: #8c8892; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 20px; 
+            height: 40px; 
+            width: 50%; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
-        /* sidebar */
-/* --- تعديلات الـ Sidebar --- */
-.sidebar {
-    width: 60px; /* العرض عند الإغلاق (مجمع) */
-    background-color: #093527;
-    padding: 20px 10px;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 1000;
-    transition: width 0.4s ease; /* حركة انسيابية */
-    overflow: hidden;
-    white-space: nowrap;
-    color: white;
-}
-
-
-/* عندما ينفتح السايد بار */
-.sidebar.expanded {
-    width: 250px; /* العرض عند الفتح */
-}
-.sidebar li {
- margin-left: -8px;
- color: white;
-}
-.sidebar ul li:hover {
-            color:#ffffff;
-            background-color: #ffffff4f; 
-            padding: 5px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+        .gender:hover{
+            background-color: #8c8892;
+            transform: scale(1.05);
         }
-.logout{
-    position: absolute;
-    top: 85%;
-}
-/* إخفاء النصوص والعناوين عند الانغلاق */
-.sidebar ul li span, .sidebar h2, .sidebar h4 {
-    opacity: 0;
-    transition: opacity 0.3s;
-}
+        .input-gender{
+            width: 0.01px;
+        }
+        #Male{
+            display: none;
+        }
+        .input-gender:checked + .gender{
+            background-color: #137657;
+            transform: scale(0.95);
+        }
 
-.sidebar.expanded ul li span, .sidebar.expanded h2, .sidebar.expanded h4 {
-    opacity: 1;
-}
-/* الضبابية عندما يكون السايد بار مفتوحاً */
-body.sidebar-open .without-sidebar {
-    filter: blur(5px);
-    pointer-events: none; /* يمنع التفاعل مع العناصر الخلفية */
-}
-
-/* --- الطبقة الشفافة (Overlay) --- */
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 999;
-}
-
-body.sidebar-open .sidebar-overlay {
-    display: block;
-}
-
-/* زر التبديل (Hamburger Menu) داخل السايد بار */
-.toggle-btn {
-    color: white;
-    cursor: pointer;
-    font-size: 24px;
-    margin-bottom: 30px;
-    display: block;
-    text-align: center;
-}
-li{
-    list-style: none;
-}
-.sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-}
+        /* add admin modal */
+        #addAdminModal{
+            background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%; display: none; place-content: center;
+        }
+        .addadmin-content{
+            padding: 30px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            width: 20em;
+            margin-left: calc((100% - 20em)/2);
+        }     
+        .addadmin-content input[type="text"], .addadmin-content input[type="password"]{
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #c4c7cc;
+            background: #ffffff;
+            font-size: 15px;
+            color: #0f1724;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+        /* search bar */
+        .searchbar{
+            display: flex; flex-direction:row; align-items: center; justify-content: start ; width: 100; height:70px ;
+        }
+        .searchbar h1{
+            min-width: fit-content;
+        }
+        .searchbar input{
+            width: 20%; height: 60%; margin-left: 2%;
+        }
+        .searchbar select{
+            width: 20%;height:60%; margin-left: 2%; 
+        }
