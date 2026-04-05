@@ -1,15 +1,19 @@
 <?php
+// Logout script to end admin session
+// This file clears all session data and redirects to login page
+
 session_start();
 
-// clear all session variables
+// Clear all session variables
 $_SESSION = array();
 
-// finish the session
+// Destroy the session completely
 session_destroy();
-// save info of the logged out admin in session variables
+
+// Set a flag to indicate successful logout (optional)
 $_SESSION['logged_out'] = true;
 
-// go to login page
+// Redirect to login page
 header("Location: login.php");
 exit();
 ?>

@@ -1,29 +1,36 @@
 
 <?php
+// Login page for admin authentication
+// This file handles admin login, validates credentials against database,
+// and manages session creation for authenticated users.
+
 session_start();
+
+// Database connection parameters
 $server = "localhost";
 $user = "root";
 $pass = "";
 $name = "animal_adoption";
 
-// variable to hold error messages
+// Variable to hold error messages for display
 $error_message = "";
 
+// Establish database connection
 try {
     $conn = mysqli_connect($server, $user, $pass, $name);
 } catch (mysqli_sql_exception $e) {
     die("Connection failed: " . $e->getMessage()); 
 }
 
-//process login form 
+// Process login form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
     $username = trim($_POST["username"] ?? '');
     $password = $_POST["psw"] ?? '';
 
-// validate input
+    // Validate input fields are not empty
     if (!empty($username) && !empty($password)) {
         
-        // bring the admin data from database
+        // Prepare and execute query to fetch admin data
         $stmt = $conn->prepare("SELECT id, username, password FROM admins WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -32,13 +39,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
         if ($result->num_rows === 1) {
             $admins = $result->fetch_assoc();
             
-            // verify the password using password_verify
+            // Verify password using password_verify function
             if (password_verify($password, $admins["password"])) {
-                // save info of the logged in admin in session variables
+                // Store admin information in session variables
                 $_SESSION["admin_id"] = $admins["id"];
                 $_SESSION["username"] = $admins["username"];
                 
-                header("Location: http://localhost:8080/miniprojer1/home/home.php");
+                // Redirect to home page after successful login
+                header("Location: ../home/home.php");
                 exit();
             } else {
                 $error_message = "Invalid password.";

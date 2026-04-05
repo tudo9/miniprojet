@@ -1,8 +1,13 @@
--- Create Database Database
+-- Animal Adoption Database Schema
+-- This SQL file creates the database structure for the animal adoption management system
+-- It includes tables for admins, animals, and adoptions
+
+-- Create Database
 CREATE DATABASE IF NOT EXISTS `animal_adoption`;
 USE `animal_adoption`;
 
--- Table structure for table `admins`
+-- Admin users table
+-- Stores administrator accounts with secure password hashing
 CREATE TABLE IF NOT EXISTS `admins` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
@@ -11,13 +16,14 @@ CREATE TABLE IF NOT EXISTS `admins` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Insert a default admin user. 
+-- Insert default admin user for initial setup
 -- Username: admin
 -- Password: password123 (hashed using PHP's password_hash)
 INSERT INTO `admins` (`username`, `password`) VALUES
 ('admin', '$2y$10$TVpZjbf/OrLO0Mx8eWaZyu31iZRhxkYLuwLuTKwUZCb4lAZQNfkzu');
 
--- Table structure for table `animals`
+-- Animals table
+-- Stores information about animals available for adoption
 CREATE TABLE IF NOT EXISTS `animals` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -29,9 +35,10 @@ CREATE TABLE IF NOT EXISTS `animals` (
   `image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table structure for table `adoptions`
+-- Adoptions table
+-- Records completed adoptions with adopter information
 CREATE TABLE IF NOT EXISTS `adoptions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `animal_name` varchar(255) NOT NULL,
@@ -47,5 +54,5 @@ CREATE TABLE IF NOT EXISTS `adoptions` (
   `adopter_address` text,
   `adopted_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
