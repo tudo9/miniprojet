@@ -175,6 +175,7 @@ if (($_POST["action"] ?? '') == "addadmin") {
 
         <!-- Profile -->
         <li>
+            <!-- change psw and username -->
             <a href="#">
                 <i class="fa-solid fa-user"></i> <span><?php echo htmlspecialchars($_SESSION["username"]); ?></span>
             </a>
