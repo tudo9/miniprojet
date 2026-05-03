@@ -4,7 +4,7 @@ session_start();
 
 // Ensure ONLY an existing admin can change his own a new password
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("Location: login.php");
+    header("Location: changpsw.php");
     exit;
 }
 
@@ -82,9 +82,8 @@ require_once __DIR__ . '/../db_connect.php';
                 <label for="psw"> New Password</label>
                 <input type="password" id="psw" name="psw" placeholder="*******" required>
                 
-                <input type="submit" name="login" value="Login">
-                <div class="or"> <hr> or <hr> </div>    
-                <p class="notadmin">Are you a guest? <a href="http://localhost:8080/miniprojer1/home/home.php" >continue without signup</a></p>
+                <input type="submit" name="change" value="change">
+                
             </div>
     </form>
 </body>

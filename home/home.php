@@ -15,8 +15,7 @@ $totalAnimals = mysqli_fetch_assoc($totalAnimalsQuery)['total'];
 // total adopted
 $total_adoptedquery = mysqli_query($conn,"SELECT COUNT(*) as total FROM adoptions");
 $total_adopted = mysqli_fetch_assoc($total_adoptedquery)["total"];
-// total available
-$availableAnimalsQuery = mysqli_query($conn,"SELECT COUNT(*) as total FROM animals WHERE health_status = 'healthy'");
+    $availableAnimalsQuery = mysqli_query($conn,"SELECT COUNT(*) as total FROM animals WHERE health_status = 'healthy'");
 $available = mysqli_fetch_assoc($availableAnimalsQuery)["total"];
 
 // Load animals for cards
@@ -84,7 +83,7 @@ if ($animalsQuery) {
             <h1>Meet Our Furry Friends!</h1>
             <p>We have <?php echo $available; ?> lovely animal<?php echo $available != 1 ? 's' : ''; ?> ready for a forever home.</p>
         </div>
-
+<!-- Animal List -->
         <div class="list-header">
             <h2>Our Animals</h2>
             <!-- Filter Form -->
@@ -131,7 +130,7 @@ if ($animalsQuery) {
                                 <?php echo $animal['gender']; ?>
                             </div>
                             <div class="status-badge <?php echo $animal['health_status'] == 'Healthy' ? 'status-green' : 'status-orange'; ?>">
-                                <?php echo htmlspecialchars($animal['health_status']); ?>
+                          <?php echo htmlspecialchars($animal['health_status']); ?>
                             </div>
                         </div>
                     </div>
